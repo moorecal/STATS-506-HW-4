@@ -9,7 +9,7 @@ editor: visual
 
 ## Problem 1 - Tidyverse: New Zealand
 
-### 1)
+### a)
 
 ```{r}
 library(tidyverse)
@@ -23,7 +23,7 @@ nztib <- tibble(vote = nzge$votes, year = nzge$election_year, type = nzge$voting
 nztib
 ```
 
-### 2)
+### b)
 
 ```{r}
 vote2014 <- tibble(vote = nzge$votes, year = nzge$election_year, party = nzge$party) %>%
@@ -35,7 +35,7 @@ vote2014 <- tibble(vote = nzge$votes, year = nzge$election_year, party = nzge$pa
 vote2014          
 ```
 
-### 3)
+### c)
 
 ```{r}
 win <- tibble(vote = nzge$votes, year = nzge$election_year, party = nzge$party, type = nzge$voting_type) %>%
@@ -51,7 +51,45 @@ win <- tibble(vote = nzge$votes, year = nzge$election_year, party = nzge$party, 
 win  
 ```
 
+## Problem 2 - Tidyverse: Tennis
 
+### a)
+
+```{r}
+tennis <- read.csv("atp_matches_2019.txt")
+
+tourney_count <- tennis %>%
+  mutate(tourney_date = ymd(tourney_date)) %>%
+  filter(year(tourney_date) == 2019) %>%
+  distinct(tourney_date)
+
+nrow(tourney_count)
+```
+
+There were 48 tournaments in 2019
+
+### b)
+
+```{r}
+winners <- tennis %>%
+  group_by(tourney_id) %>%
+  slice_head(n = 1) %>%
+  ungroup() %>%
+  count(winner_name, sort = TRUE) %>%
+  filter(n > 1)
+
+nrow(winners)
+
+max(winners$n)
+```
+
+25 players have won more than one tournament, and the most winning player has won 7 tournaments.
+
+### c)
+
+```{r}
+
+```
 
 
 
