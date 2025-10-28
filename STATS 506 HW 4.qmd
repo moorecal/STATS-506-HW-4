@@ -5,23 +5,60 @@ format: pdf
 editor: visual
 ---
 
-## Quarto
+# STATS 506 HW 4
 
-Test
+## Problem 1 - Tidyverse: New Zealand
 
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+### 1)
 
 ```{r}
-1 + 1
+library(tidyverse)
+library(nzelect)
+
+nztib <- tibble(vote = nzge$votes, year = nzge$election_year, type = nzge$voting_type) %>%
+          group_by(type, year) %>%
+          summarise(vote_total = sum(vote)) %>%
+          arrange(desc(vote_total))
+
+nztib
 ```
 
-You can add options to executable code like this
+### 2)
 
 ```{r}
-#| echo: false
-2 * 2
+vote2014 <- tibble(vote = nzge$votes, year = nzge$election_year, party = nzge$party) %>%
+              group_by(year, party) %>%
+              filter(year == 2014) %>%
+              summarise(vote_total = sum(vote)) %>%
+              mutate(vote_percent = 100*vote_total/sum(vote_total))
+              
+vote2014          
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+### 3)
+
+```{r}
+win <- tibble(vote = nzge$votes, year = nzge$election_year, party = nzge$party, type = nzge$voting_type) %>%
+              group_by(year, party, type) %>%
+              summarise(vote_total = sum(vote)) %>%
+              group_by(year) %>%
+              mutate(vote_percent = 100*vote_total/sum(vote_total)) %>%
+              group_by(year, type) %>%
+              mutate(winner = party[which.max(vote_percent)]) %>%
+              slice_max(vote_percent) %>%
+              select(year, type, winner)
+
+win  
+```
+
+
+
+
+
+
+
+
+
+
+
+
