@@ -66,7 +66,7 @@ tourney_count <- tennis %>%
 nrow(tourney_count)
 ```
 
-There were 48 tournaments in 2019
+There were 48 tournaments in 2019.
 
 ### b)
 
@@ -88,12 +88,51 @@ max(winners$n)
 ### c)
 
 ```{r}
-
+tennis %>%
+  summarise(
+    w_ace_mean = mean(w_ace, na.rm = TRUE),
+    l_ace_mean  = mean(l_ace, na.rm = TRUE),
+    w_ace_sd   = sd(w_ace, na.rm = TRUE),
+    l_ace_sd    = sd(l_ace, na.rm = TRUE)
+  )
 ```
 
+They have similar standard deviations and the means are around 2 aces apart, so there does seem to be evidence for a difference in means in the number of aces hit by winners vs losers.
 
+### d)
 
+```{r}
+players <- tennis %>%
+  select(tourney_id, winner_name, loser_name) %>%
+  pivot_longer(
+    cols = c(winner_name, loser_name),
+    names_to = "outcome",
+    values_to = "player") %>%
+  mutate(
+    win = if_else(outcome == "winner_name", 1, 0)
+  )
 
+winrate <- players %>%
+  group_by(player) %>%
+  summarise(
+    games = n(),
+    wins = sum(win),
+    win_rate = wins/games) %>%
+  filter(games > 5) %>%
+  arrange(desc(win_rate))
+
+winrate
+```
+
+Nadal has the highest win rate at 86.96% of games won.
+
+## Problem 3 - Visualization
+
+### a)
+
+```{r}
+
+```
 
 
 
