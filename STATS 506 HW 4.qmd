@@ -177,7 +177,7 @@ Interestingly it appears that the states with the lowest average were actually h
 
 ### c)
 
-```{r}
+```{r, fig.width=10, fig.height=8}
 state_list <- unique(covid$state)
 
 firsthalf <- state_list[1:(length(state_list)/2)]
@@ -206,4 +206,4 @@ ggplot(data = plot2, aes(x = date, y = cases)) +
   facet_wrap(vars(state))
 ```
 
-New York, Florida, Connecticut, Michigan, and Texas were among some of the states that were hit by covid cases earliest.
+New York, Florida, Connecticut, Michigan, and New Jersey were among some of the states that were hit by covid cases earliest.
