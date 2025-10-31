@@ -131,11 +131,79 @@ Nadal has the highest win rate at 86.96% of games won.
 ### a)
 
 ```{r}
+library(ggplot2)
+covid <- read.csv("us-states.txt")
 
+covid$date <- as.Date(covid$date)
+
+case_mean <- covid %>%
+  group_by(date) %>%
+  summarise(cases_avg = mean(cases_avg, na.rm = TRUE))
+
+ggplot(covid, aes(x = date, y = cases)) +
+  geom_point() +
+  geom_line(data = case_mean, aes(y = cases_avg), color = "red", linewidth = 1) +
+  scale_x_date(date_breaks = "6 months", date_labels = "%b %Y") + 
+  labs(title = "US Covid Cases", x = "Date", y = "Cases")
 ```
 
+There seem to be two major spikes in December 2020 - January 2021 and again from December 2021 - January 2022, and five smaller spikes in April 2020, July 2020, September 2021, July 2022, and December 2022.
 
+### b)
 
+```{r}
+states <- covid %>%
+  group_by(state) %>%
+  summarise(rate_avg = mean(cases_avg_per_100k, na.rm = TRUE)) %>%
+  arrange(desc(rate_avg))
 
+states$state[1:3]
+states$state[(nrow(states)-2):nrow(states)]
+```
 
+American Samoa, Rhode Island, and Alaska have the highest rates and Oregon, Maine, and Maryland have the lowest rates.
 
+```{r}
+case_states <- covid %>%
+  filter(state %in% c(states$state[1:3], states$state[(nrow(states)-2):nrow(states)]))
+
+ggplot(data = case_states, aes(x = date, y = cases)) + 
+  geom_point() + 
+  labs(title = "Covid Cases", x = "Date", y = "Cases") + 
+  facet_wrap(vars(state))
+```
+
+Interestingly it appears that the states with the lowest average were actually hit harder by the big spike in early 2022. Despite having the highest running average, American Samoa appears to have a relatively flat line, possibly with their average just being higher in general even though they didn't experience an extreme spike, or because there isn't any data from there prior to late 2021.
+
+### c)
+
+```{r}
+state_list <- unique(covid$state)
+
+firsthalf <- state_list[1:(length(state_list)/2)]
+secondhalf <- state_list[(length(state_list)/2 + 1):length(state_list)]
+
+plot1 <- covid %>%
+  filter(state %in% firsthalf) %>%
+  filter(date < as.Date("2021-01-01"))
+
+plot2 <- covid %>%
+  filter(state %in% secondhalf) %>%
+  filter(date < as.Date("2021-01-01"))
+
+ggplot(data = plot1, aes(x = date, y = cases)) + 
+  geom_point() + 
+  labs(title = "Covid Cases", x = "Date", y = "Cases") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  theme(axis.text.y = element_text(size = 7)) +
+  facet_wrap(vars(state))
+
+ggplot(data = plot2, aes(x = date, y = cases)) + 
+  geom_point() + 
+  labs(title = "Covid Cases", x = "Date", y = "Cases") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  theme(axis.text.y = element_text(size = 7)) +
+  facet_wrap(vars(state))
+```
+
+New York, Florida, Connecticut, Michigan, and Texas were among some of the states that were hit by covid cases earliest.
